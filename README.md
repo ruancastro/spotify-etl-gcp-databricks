@@ -15,11 +15,11 @@ It was built to showcase data engineering best practices, including orchestratio
 ---
 
 ## ⚙️ Tech Stack
-- **Databricks** – Orchestration and transformations  
-- **Apache Spark (PySpark)** – Data processing  
-- **Google Cloud Storage (GCS)** – Raw and curated data layers  
-- **BigQuery** – Analytics-ready data  
-- **Spotify API** – Data source  
+- **Databricks** – Orchestration and transformations
+- **Apache Spark (PySpark)** – Data processing
+- **Google Cloud Storage (GCS)** – Raw and curated data layers
+- **BigQuery** – Analytics-ready data
+- **Spotify API** – Data source
 - **Cloud Run + Cloud Scheduler (GCP)** – Automated daily ingestion triggers
 
 ---
@@ -69,9 +69,9 @@ It was built to showcase data engineering best practices, including orchestratio
 
 The ingestion process runs automatically using **Cloud Scheduler** and **Cloud Run**:
 
-1. **Cloud Scheduler** triggers a **HTTP request** daily.  
-2. The request hits a **Cloud Run** endpoint hosting a lightweight Python API.  
-3. This API executes the **Spotify ETL extraction**, writing new data to the **Bronze Layer** (GCS).  
+1. **Cloud Scheduler** triggers a **HTTP request** daily.
+2. The request hits a **Cloud Run** endpoint hosting a lightweight Python API.
+3. This API executes the **Spotify ETL extraction**, writing new data to the **Bronze Layer** (GCS).
 4. Once the raw data is updated, a **Databricks Job** is triggered for further transformation and loading into **Silver** and **Gold** tables.
 
 This setup allows full automation with minimal cost (below R$5/month).
@@ -79,9 +79,9 @@ This setup allows full automation with minimal cost (below R$5/month).
 ---
 
 ## 📊 Data Flow Summary
-1. **Extract:** Spotify API → Cloud Run  
-2. **Load (Raw):** Cloud Run → GCS (Bronze)  
-3. **Transform:** Databricks → Silver/Gold layers  
+1. **Extract:** Spotify API → Cloud Run
+2. **Load (Raw):** Cloud Run → GCS (Bronze)
+3. **Transform:** Databricks → Silver/Gold layers
 4. **Analyze:** BigQuery / Power BI
 
 ---

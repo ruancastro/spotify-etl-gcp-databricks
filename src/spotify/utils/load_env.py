@@ -1,6 +1,9 @@
+"""Utility to load environment variables from a .env file."""
+
 from typing import Optional
 from pathlib import Path
 from os import environ
+
 
 def load_env(env_path: Optional[str] = None) -> None:
     """Load environment variables from a .env file into ``os.environ``.
@@ -30,5 +33,5 @@ def load_env(env_path: Optional[str] = None) -> None:
                 continue
             key, val = line.split("=", 1)
             key = key.strip()
-            val = val.strip().strip('\'"')
+            val = val.strip().strip("'\"")
             environ.setdefault(key, val)
