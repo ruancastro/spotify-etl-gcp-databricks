@@ -1,6 +1,7 @@
 # pylint: disable=R0903, E0611, E0401
 """Module to manage Spotify API tokens using Client Credentials Flow."""
 
+import time
 from os import getenv
 import base64
 import requests
@@ -15,6 +16,8 @@ class TokenManager:
     def __init__(self, client_id: str, client_secret: str):
         self.client_id = client_id
         self.client_secret = client_secret
+        self.token_timeout = None  # Token validity in seconds
+        self.token = None
 
     def get_new_token(self) -> str:
         """Obtain a Spotify access token using the Client Credentials Flow.
@@ -60,10 +63,34 @@ class TokenManager:
             )
 
         body = resp.json()
-        new_token = body.get("access_token")
-        if not new_token:
+        self.token = body.get("access_token")
+        if not self.token:
             raise RuntimeError(f"No access_token in response: {body}")
-        return new_token
+
+        self.token_timeout = (
+            time.time() + body["expires_in"]
+        )  # Token validity in seconds
+        return self.token
+
+    def is_token_valid(self, spread_in_seconds: int) -> bool:
+        """Check if the current token is still valid based on timeout.
+
+        Returns:
+            True if the token is valid, False otherwise.
+        """
+        if self.token_timeout is None:
+            return False
+        return time.time() + spread_in_seconds < self.token_timeout
+
+    def get_token(self):
+        """Get a valid token, refreshing it if necessary.
+
+        Returns:
+            A valid access token string.
+        """
+        if not self.is_token_valid(spread_in_seconds=60):
+            return self.get_new_token()
+        return self.token
 
 
 if __name__ == "__main__":
@@ -74,7 +101,7 @@ if __name__ == "__main__":
         token_manager = TokenManager(
             client_id=getenv("CLIENT_ID"), client_secret=getenv("CLIENT_SECRET")
         )
-        token = token_manager.get_new_token()
+        token = token_manager.get_token()
         print(token)
     except (ValueError, RuntimeError, requests.RequestException) as e:
         print("Error obtaining token:", e)
