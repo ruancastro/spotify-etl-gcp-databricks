@@ -72,15 +72,28 @@ class TokenManager:
         )  # Token validity in seconds
         return self.token
 
-    def is_token_valid(self, spread_in_seconds: int) -> bool:
-        """Check if the current token is still valid based on timeout.
-
-        Returns:
-            True if the token is valid, False otherwise.
+    def is_token_valid(self, offset: int) -> bool:
+        """
+        Determine whether the stored token is currently valid, allowing an optional
+        time offset to check validity proactively.
+        Parameters
+        ----------
+        offset : int
+            Number of seconds to add to the current time when evaluating validity.
+            Use a positive offset to treat the token as expired earlier (e.g., to
+            trigger refresh before actual expiration). A value of 0 checks the token
+            against the current time.
+        Returns
+        -------
+        bool
+            True if a token timeout is set and the current time plus offset is
+            strictly less than the token timeout (i.e., the token is considered valid);
+            False if no timeout is set or the token has expired or will expire within
+            the offset window.
         """
         if self.token_timeout is None:
             return False
-        return time.time() + spread_in_seconds < self.token_timeout
+        return time.time() + offset < self.token_timeout
 
     def get_token(self):
         """Get a valid token, refreshing it if necessary.
@@ -88,7 +101,7 @@ class TokenManager:
         Returns:
             A valid access token string.
         """
-        if not self.is_token_valid(spread_in_seconds=60):
+        if not self.is_token_valid(offset=60):
             return self.get_new_token()
         return self.token
 
