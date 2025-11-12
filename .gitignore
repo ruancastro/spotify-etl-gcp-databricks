@@ -3,3 +3,4 @@ __pycache__/
 .ipynb_checkpoints/
 .venv/
 .pre-commit-config.yaml
+.cache
